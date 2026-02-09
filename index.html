@@ -16,8 +16,13 @@
         
         .char-counter { position: absolute; bottom: 10px; right: 15px; font-size: 12px; color: #6c757d; font-weight: bold; }
         
-        button.main-btn { background-color: #007bff; color: white; border: none; padding: 15px 30px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: background 0.2s; }
+        /* Bottoni */
+        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        button.main-btn { flex: 3; background-color: #007bff; color: white; border: none; padding: 15px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; transition: background 0.2s; }
         button.main-btn:hover { background-color: #0056b3; }
+        
+        button.reset-btn { flex: 1; background-color: #6c757d; color: white; border: none; padding: 15px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; transition: background 0.2s; }
+        button.reset-btn:hover { background-color: #5a6268; }
         
         .alert { padding: 15px; background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 8px; margin: 20px 0; display: none; }
         
@@ -28,7 +33,6 @@
         .output-textarea { height: 120px !important; background-color: #fff; margin-top: 10px; }
         
         .feedback-btn { position: fixed; bottom: 20px; right: 20px; background: #343a40; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); font-weight: bold; font-size: 14px; }
-        .feedback-btn:hover { background: #000; }
     </style>
 </head>
 <body>
@@ -42,12 +46,14 @@
         <div id="charCount" class="char-counter">Caratteri: 0</div>
     </div>
     
-    <button class="main-btn" onclick="processCodes()">GENERA MODULI OUTPUT</button>
+    <div class="btn-group">
+        <button class="main-btn" onclick="processCodes()">GENERA MODULI OUTPUT</button>
+        <button class="reset-btn" onclick="resetTool()">RESET</button>
+    </div>
 
     <div id="alertLimit" class="alert"></div>
 
-    <div id="outputsContainer">
-        </div>
+    <div id="outputsContainer"></div>
 </div>
 
 <a href="mailto:antonio.mignano@idntt.ch?subject=Feedback Tool Slider" class="feedback-btn">
@@ -60,16 +66,23 @@
         document.getElementById('charCount').innerText = "Caratteri: " + input.length.toLocaleString();
     }
 
+    function resetTool() {
+        if(confirm("Vuoi davvero svuotare tutto?")) {
+            document.getElementById('inputCodes').value = '';
+            document.getElementById('outputsContainer').innerHTML = '';
+            document.getElementById('alertLimit').style.display = 'none';
+            updateCounter();
+        }
+    }
+
     function processCodes() {
         const input = document.getElementById('inputCodes').value;
         const container = document.getElementById('outputsContainer');
         const alertBox = document.getElementById('alertLimit');
         
-        // Pulizia
         container.innerHTML = '';
         alertBox.style.display = 'none';
 
-        // Estrazione codici (almeno 6 cifre)
         let codesArray = input.match(/\d{6,}/g);
 
         if (!codesArray) {
@@ -81,29 +94,23 @@
         const LIMIT = 50000;
         let parts = [];
 
-        // Logica di divisione ricorsiva
         let remainingString = fullString;
         while (remainingString.length > LIMIT) {
             let splitIndex = remainingString.lastIndexOf(',', LIMIT);
-            
-            if (splitIndex === -1) splitIndex = LIMIT; // Sicurezza estrema
-
+            if (splitIndex === -1) splitIndex = LIMIT;
             parts.push(remainingString.substring(0, splitIndex));
             remainingString = remainingString.substring(splitIndex + 1);
         }
-        parts.push(remainingString); // Aggiunge l'ultima parte
+        parts.push(remainingString);
 
-        // Se abbiamo più di una parte, mostriamo l'alert
         if (parts.length > 1) {
             alertBox.style.display = 'block';
             alertBox.innerHTML = `<strong>Attenzione:</strong> I codici superano il limite. Sono stati generati <strong>${parts.length} moduli</strong> diversi.`;
         }
 
-        // Creazione fisica dei box di output
         parts.forEach((content, index) => {
             const div = document.createElement('div');
             div.className = 'output-box';
-            
             const id = `out-${index}`;
             div.innerHTML = `
                 <label>Modulo Slider ${index + 1} (${content.length.toLocaleString()} caratteri)</label>
@@ -118,17 +125,10 @@
         const text = document.getElementById(id);
         text.select();
         document.execCommand("copy");
-        
-        // Feedback visivo sul pulsante
         const btn = text.previousElementSibling;
         const originalText = btn.innerText;
         btn.innerText = "COPIATO! ✅";
-        btn.style.background = "#155724";
-        
-        setTimeout(() => {
-            btn.innerText = originalText;
-            btn.style.background = "#28a745";
-        }, 2000);
+        setTimeout(() => { btn.innerText = originalText; }, 2000);
     }
 </script>
 
