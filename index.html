@@ -5,53 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Convertitore Codici Prodotto</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f4f7f6; color: #333; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        textarea { width: 100%; height: 150px; margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; resize: vertical; box-sizing: border-box; }
-        button { background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #0056b3; }
-        .alert { padding: 15px; background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 4px; margin-bottom: 20px; display: none; }
-        .output-section { margin-top: 20px; border-top: 2px solid #eee; padding-top: 20px; }
-        label { font-weight: bold; display: block; margin-bottom: 5px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #f0f2f5; color: #333; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
         
-        /* Feedback Button */
-        .feedback-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #28a745;
-            color: white;
-            padding: 12px 18px;
-            border-radius: 50px;
-            text-decoration: none;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            font-weight: bold;
-            transition: transform 0.2s;
-        }
-        .feedback-btn:hover { transform: scale(1.05); background: #218838; }
+        .input-wrapper { position: relative; margin-bottom: 20px; }
+        textarea { width: 100%; height: 180px; padding: 12px; border: 2px solid #ddd; border-radius: 8px; resize: vertical; box-sizing: border-box; font-family: monospace; }
+        textarea:focus { border-color: #007bff; outline: none; }
+        
+        .char-counter { position: absolute; bottom: 10px; right: 15px; font-size: 12px; color: #666; background: rgba(255,255,255,0.8); padding: 2px 5px; border-radius: 4px; }
+        
+        button { background-color: #007bff; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 600; }
+        button:hover { background-color: #0056b3; }
+        
+        .alert { padding: 15px; background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 8px; margin: 20px 0; display: none; }
+        
+        .output-box { margin-top: 20px; position: relative; }
+        .copy-btn { position: absolute; top: 35px; right: 10px; background: #6c757d; font-size: 12px; padding: 5px 10px; }
+        
+        label { font-weight: bold; display: block; margin-bottom: 8px; color: #444; }
+        
+        .feedback-btn { position: fixed; bottom: 20px; right: 20px; background: #28a745; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Estrattore Codici per Slider</h2>
-    <p>Incolla qui la colonna di Excel con i codici prodotto:</p>
+    <h2>🚀 Estrattore Codici Slider</h2>
+    <p>Incolla i codici da Excel qui sotto:</p>
     
-    <textarea id="inputCodes" placeholder="Incolla qui i codici..."></textarea>
-    <button onclick="processCodes()">Genera Output</button>
+    <div class="input-wrapper">
+        <textarea id="inputCodes" placeholder="Incolla qui i codici..." oninput="updateCounter()"></textarea>
+        <div id="charCount" class="char-counter">Caratteri: 0</div>
+    </div>
+    
+    <button onclick="processCodes()">Genera Output Separato da Virgola</button>
 
     <div id="alertLimit" class="alert">
-        <strong>Attenzione!</strong> L'output ha superato i 50.000 caratteri. I codici sono stati divisi in due box.
+        <strong>Limite Superato!</strong> L'output eccede i 50.000 caratteri ed è stato diviso in due moduli.
     </div>
 
-    <div class="output-section">
-        <label>Output 1 (Max 50k caratteri):</label>
-        <textarea id="output1" readonly placeholder="L'output apparirà qui..."></textarea>
-        
-        <div id="secondOutputWrapper" style="display:none;">
-            <label>Output 2 (Rimanenti):</label>
-            <textarea id="output2" readonly></textarea>
-        </div>
+    <div class="output-box">
+        <label>Output 1 (Max 50.000 char):</label>
+        <button class="copy-btn" onclick="copyToClipboard('output1')">Copia</button>
+        <textarea id="output1" readonly></textarea>
+    </div>
+    
+    <div id="secondOutputWrapper" class="output-box" style="display:none;">
+        <label>Output 2 (Rimanenti):</label>
+        <button class="copy-btn" onclick="copyToClipboard('output2')">Copia</button>
+        <textarea id="output2" readonly></textarea>
     </div>
 </div>
 
@@ -60,6 +62,12 @@
 </a>
 
 <script>
+    // Aggiorna il contatore caratteri mentre l'utente incolla/scrive
+    function updateCounter() {
+        const input = document.getElementById('inputCodes').value;
+        document.getElementById('charCount').innerText = "Caratteri: " + input.length;
+    }
+
     function processCodes() {
         const input = document.getElementById('inputCodes').value;
         const alertBox = document.getElementById('alertLimit');
@@ -67,18 +75,14 @@
         const out2 = document.getElementById('output2');
         const wrapper2 = document.getElementById('secondOutputWrapper');
 
-        // Reset
         alertBox.style.display = 'none';
         wrapper2.style.display = 'none';
-        out1.value = '';
-        out2.value = '';
 
-        // Estrazione codici: trova sequenze numeriche di almeno 6 cifre
-        // Usiamo una Regex per pulire tutto ciò che non è un numero e separare
+        // Estrae numeri di almeno 6 cifre
         let codesArray = input.match(/\d{6,}/g);
 
         if (!codesArray) {
-            alert("Nessun codice valido (min. 6 cifre) trovato.");
+            alert("Nessun codice valido trovato (minimo 6 cifre).");
             return;
         }
 
@@ -87,19 +91,20 @@
         if (fullString.length <= 50000) {
             out1.value = fullString;
         } else {
-            // Logica di divisione sicura per non tagliare un codice a metà
             alertBox.style.display = 'block';
             wrapper2.style.display = 'block';
-
-            // Troviamo l'ultima virgola prima del limite dei 50.000
             let splitIndex = fullString.lastIndexOf(',', 50000);
-            
-            if (splitIndex === -1) splitIndex = 50000; // Fallback se non ci sono virgole
-
+            if (splitIndex === -1) splitIndex = 50000;
             out1.value = fullString.substring(0, splitIndex);
-            // substring(splitIndex + 1) per saltare la virgola di separazione tra i due blocchi
             out2.value = fullString.substring(splitIndex + 1);
         }
+    }
+
+    function copyToClipboard(id) {
+        const text = document.getElementById(id);
+        text.select();
+        document.execCommand("copy");
+        alert("Copiato negli appunti!");
     }
 </script>
 
