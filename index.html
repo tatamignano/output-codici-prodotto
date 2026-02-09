@@ -3,108 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Convertitore Codici Prodotto</title>
+    <title>Estrattore Codici Dinamico</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #f0f2f5; color: #333; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background-color: #f4f7f9; color: #333; line-height: 1.6; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
         
-        .input-wrapper { position: relative; margin-bottom: 20px; }
-        textarea { width: 100%; height: 180px; padding: 12px; border: 2px solid #ddd; border-radius: 8px; resize: vertical; box-sizing: border-box; font-family: monospace; }
-        textarea:focus { border-color: #007bff; outline: none; }
+        .input-section { position: relative; margin-bottom: 25px; }
+        label { font-weight: bold; display: block; margin-bottom: 8px; color: #444; }
         
-        .char-counter { position: absolute; bottom: 10px; right: 15px; font-size: 12px; color: #666; background: rgba(255,255,255,0.8); padding: 2px 5px; border-radius: 4px; }
+        textarea { width: 100%; height: 180px; padding: 12px; border: 2px solid #ced4da; border-radius: 8px; resize: vertical; box-sizing: border-box; font-family: 'Courier New', monospace; font-size: 14px; }
+        textarea:focus { border-color: #007bff; outline: none; box-shadow: 0 0 0 3px rgba(0,123,255,0.1); }
         
-        button { background-color: #007bff; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 600; }
-        button:hover { background-color: #0056b3; }
+        .char-counter { position: absolute; bottom: 10px; right: 15px; font-size: 12px; color: #6c757d; font-weight: bold; }
+        
+        button.main-btn { background-color: #007bff; color: white; border: none; padding: 15px 30px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: background 0.2s; }
+        button.main-btn:hover { background-color: #0056b3; }
         
         .alert { padding: 15px; background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 8px; margin: 20px 0; display: none; }
         
-        .output-box { margin-top: 20px; position: relative; }
-        .copy-btn { position: absolute; top: 35px; right: 10px; background: #6c757d; font-size: 12px; padding: 5px 10px; }
+        .output-box { margin-top: 25px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; position: relative; }
+        .copy-btn { position: absolute; top: 10px; right: 10px; background: #28a745; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .copy-btn:hover { background: #218838; }
         
-        label { font-weight: bold; display: block; margin-bottom: 8px; color: #444; }
+        .output-textarea { height: 120px !important; background-color: #fff; margin-top: 10px; }
         
-        .feedback-btn { position: fixed; bottom: 20px; right: 20px; background: #28a745; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-weight: bold; }
+        .feedback-btn { position: fixed; bottom: 20px; right: 20px; background: #343a40; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); font-weight: bold; font-size: 14px; }
+        .feedback-btn:hover { background: #000; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🚀 Estrattore Codici Slider</h2>
-    <p>Incolla i codici da Excel qui sotto:</p>
+    <h2>🚀 Generatore Slider Prodotti</h2>
     
-    <div class="input-wrapper">
-        <textarea id="inputCodes" placeholder="Incolla qui i codici..." oninput="updateCounter()"></textarea>
+    <div class="input-section">
+        <label>1. Incolla i codici da Excel:</label>
+        <textarea id="inputCodes" placeholder="Incolla qui le colonne Excel..." oninput="updateCounter()"></textarea>
         <div id="charCount" class="char-counter">Caratteri: 0</div>
     </div>
     
-    <button onclick="processCodes()">Genera Output Separato da Virgola</button>
+    <button class="main-btn" onclick="processCodes()">GENERA MODULI OUTPUT</button>
 
-    <div id="alertLimit" class="alert">
-        <strong>Limite Superato!</strong> L'output eccede i 50.000 caratteri ed è stato diviso in due moduli.
-    </div>
+    <div id="alertLimit" class="alert"></div>
 
-    <div class="output-box">
-        <label>Output 1 (Max 50.000 char):</label>
-        <button class="copy-btn" onclick="copyToClipboard('output1')">Copia</button>
-        <textarea id="output1" readonly></textarea>
-    </div>
-    
-    <div id="secondOutputWrapper" class="output-box" style="display:none;">
-        <label>Output 2 (Rimanenti):</label>
-        <button class="copy-btn" onclick="copyToClipboard('output2')">Copia</button>
-        <textarea id="output2" readonly></textarea>
-    </div>
+    <div id="outputsContainer">
+        </div>
 </div>
 
-<a href="mailto:tuaemail@esempio.it?subject=Feedback Tool Codici" class="feedback-btn">
-    💡 Suggerimenti?
+<a href="mailto:antonio.mignano@idntt.ch?subject=Feedback Tool Slider" class="feedback-btn">
+    ✉️ Invia Feedback
 </a>
 
 <script>
-    // Aggiorna il contatore caratteri mentre l'utente incolla/scrive
     function updateCounter() {
         const input = document.getElementById('inputCodes').value;
-        document.getElementById('charCount').innerText = "Caratteri: " + input.length;
+        document.getElementById('charCount').innerText = "Caratteri: " + input.length.toLocaleString();
     }
 
     function processCodes() {
         const input = document.getElementById('inputCodes').value;
+        const container = document.getElementById('outputsContainer');
         const alertBox = document.getElementById('alertLimit');
-        const out1 = document.getElementById('output1');
-        const out2 = document.getElementById('output2');
-        const wrapper2 = document.getElementById('secondOutputWrapper');
-
+        
+        // Pulizia
+        container.innerHTML = '';
         alertBox.style.display = 'none';
-        wrapper2.style.display = 'none';
 
-        // Estrae numeri di almeno 6 cifre
+        // Estrazione codici (almeno 6 cifre)
         let codesArray = input.match(/\d{6,}/g);
 
         if (!codesArray) {
-            alert("Nessun codice valido trovato (minimo 6 cifre).");
+            alert("Nessun codice valido trovato.");
             return;
         }
 
         let fullString = codesArray.join(',');
+        const LIMIT = 50000;
+        let parts = [];
 
-        if (fullString.length <= 50000) {
-            out1.value = fullString;
-        } else {
-            alertBox.style.display = 'block';
-            wrapper2.style.display = 'block';
-            let splitIndex = fullString.lastIndexOf(',', 50000);
-            if (splitIndex === -1) splitIndex = 50000;
-            out1.value = fullString.substring(0, splitIndex);
-            out2.value = fullString.substring(splitIndex + 1);
+        // Logica di divisione ricorsiva
+        let remainingString = fullString;
+        while (remainingString.length > LIMIT) {
+            let splitIndex = remainingString.lastIndexOf(',', LIMIT);
+            
+            if (splitIndex === -1) splitIndex = LIMIT; // Sicurezza estrema
+
+            parts.push(remainingString.substring(0, splitIndex));
+            remainingString = remainingString.substring(splitIndex + 1);
         }
+        parts.push(remainingString); // Aggiunge l'ultima parte
+
+        // Se abbiamo più di una parte, mostriamo l'alert
+        if (parts.length > 1) {
+            alertBox.style.display = 'block';
+            alertBox.innerHTML = `<strong>Attenzione:</strong> I codici superano il limite. Sono stati generati <strong>${parts.length} moduli</strong> diversi.`;
+        }
+
+        // Creazione fisica dei box di output
+        parts.forEach((content, index) => {
+            const div = document.createElement('div');
+            div.className = 'output-box';
+            
+            const id = `out-${index}`;
+            div.innerHTML = `
+                <label>Modulo Slider ${index + 1} (${content.length.toLocaleString()} caratteri)</label>
+                <button class="copy-btn" onclick="copyToClipboard('${id}')">Copia Modulo ${index + 1}</button>
+                <textarea id="${id}" class="output-textarea" readonly>${content}</textarea>
+            `;
+            container.appendChild(div);
+        });
     }
 
     function copyToClipboard(id) {
         const text = document.getElementById(id);
         text.select();
         document.execCommand("copy");
-        alert("Copiato negli appunti!");
+        
+        // Feedback visivo sul pulsante
+        const btn = text.previousElementSibling;
+        const originalText = btn.innerText;
+        btn.innerText = "COPIATO! ✅";
+        btn.style.background = "#155724";
+        
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.style.background = "#28a745";
+        }, 2000);
     }
 </script>
 
