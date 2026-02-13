@@ -3,71 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estrattore Codici Dinamico</title>
+    <title>GEN_BLOCCHI_COD.EXE - Generatore Slider</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background-color: #f4f7f9; color: #333; line-height: 1.6; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        :root { 
+            --dos-green: #33ff33; 
+            --dos-bg: #000; 
+            --dos-border: #33ff33;
+            --dos-alert: #ffff33;
+        }
         
+        * { box-sizing: border-box; text-transform: uppercase; }
+
+        body { 
+            font-family: 'VT323', monospace; 
+            background-color: var(--dos-bg); 
+            color: var(--dos-green); 
+            margin: 0; 
+            padding: 20px;
+            min-height: 100vh;
+            font-size: 1.2rem;
+            line-height: 1.2;
+        }
+
+        /* Effetto Monitor CRT */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+            z-index: 9999;
+            background-size: 100% 3px;
+            pointer-events: none;
+        }
+
+        .container { 
+            max-width: 900px; 
+            margin: auto; 
+            border: 2px solid var(--dos-border);
+            padding: 30px;
+            position: relative;
+        }
+
+        h2 { 
+            position: absolute; 
+            top: -18px; 
+            left: 20px; 
+            background: var(--dos-bg); 
+            padding: 0 10px; 
+            font-size: 1.8rem;
+            margin: 0;
+        }
+
         .input-section { position: relative; margin-bottom: 25px; }
-        label { font-weight: bold; display: block; margin-bottom: 8px; color: #444; }
+        label { display: block; margin-bottom: 10px; font-weight: bold; }
         
-        textarea { width: 100%; height: 180px; padding: 12px; border: 2px solid #ced4da; border-radius: 8px; resize: vertical; box-sizing: border-box; font-family: 'Courier New', monospace; font-size: 14px; }
-        textarea:focus { border-color: #007bff; outline: none; box-shadow: 0 0 0 3px rgba(0,123,255,0.1); }
+        textarea { 
+            width: 100%; 
+            background: transparent; 
+            color: var(--dos-green); 
+            border: 1px solid var(--dos-border); 
+            font-family: 'VT323', monospace; 
+            font-size: 1.2rem;
+            padding: 12px;
+            resize: vertical;
+        }
+
+        textarea:focus { outline: none; background: rgba(51, 255, 51, 0.05); }
         
-        .char-counter { position: absolute; bottom: 10px; right: 15px; font-size: 12px; color: #6c757d; font-weight: bold; }
+        .char-counter { margin-top: 5px; text-align: right; font-size: 1rem; }
+
+        /* Pulsantiera */
+        .btn-group { display: flex; gap: 15px; margin-bottom: 20px; }
         
-        /* Bottoni */
-        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        button.main-btn { flex: 3; background-color: #007bff; color: white; border: none; padding: 15px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; transition: background 0.2s; }
-        button.main-btn:hover { background-color: #0056b3; }
+        button {
+            font-family: 'VT323', monospace;
+            font-size: 1.3rem;
+            padding: 10px 20px;
+            background: transparent;
+            color: var(--dos-green);
+            border: 2px solid var(--dos-green);
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        button:hover {
+            background: var(--dos-green);
+            color: var(--dos-bg);
+        }
+
+        .main-btn { flex: 3; }
+        .reset-btn { flex: 1; border-color: #666; color: #666; }
+        .reset-btn:hover { background: #666; color: var(--dos-bg); }
+
+        /* Alert DOS */
+        .alert { 
+            padding: 15px; 
+            border: 2px solid var(--dos-alert); 
+            color: var(--dos-alert);
+            margin: 20px 0; 
+            display: none;
+            background: rgba(255, 255, 51, 0.1);
+        }
+
+        /* Output Boxes */
+        .output-box { 
+            margin-top: 25px; 
+            padding: 15px; 
+            border: 1px dashed var(--dos-green); 
+            position: relative; 
+        }
+
+        .copy-btn { 
+            margin-bottom: 10px;
+            font-size: 1rem;
+            padding: 5px 10px;
+        }
         
-        button.reset-btn { flex: 1; background-color: #6c757d; color: white; border: none; padding: 15px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; transition: background 0.2s; }
-        button.reset-btn:hover { background-color: #5a6268; }
-        
-        .alert { padding: 15px; background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 8px; margin: 20px 0; display: none; }
-        
-        .output-box { margin-top: 25px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; position: relative; }
-        .copy-btn { position: absolute; top: 10px; right: 10px; background: #28a745; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
-        .copy-btn:hover { background: #218838; }
-        
-        .output-textarea { height: 120px !important; background-color: #fff; margin-top: 10px; }
-        
-        .feedback-btn { position: fixed; bottom: 20px; right: 20px; background: #343a40; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); font-weight: bold; font-size: 14px; }
+        .output-textarea { 
+            height: 100px !important; 
+            background-color: rgba(51, 255, 51, 0.05);
+            font-size: 1rem;
+        }
+
+        /* Link Feedback */
+        .feedback-btn { 
+            position: fixed; 
+            bottom: 20px; 
+            right: 20px; 
+            border: 1px solid var(--dos-green);
+            color: var(--dos-green);
+            padding: 10px 15px; 
+            text-decoration: none;
+        }
+        .feedback-btn:hover { background: var(--dos-green); color: var(--dos-bg); }
+
+        /* Simula cursore lampeggiante in fondo */
+        .terminal-prompt::after {
+            content: "_";
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🚀 Generatore Slider Prodotti</h2>
+    <h2>[ GEN_BLOCCHI_COD_V2.0 ]</h2>
     
     <div class="input-section">
-        <label>1. Incolla i codici da Excel:</label>
-        <textarea id="inputCodes" placeholder="Incolla qui le colonne Excel..." oninput="updateCounter()"></textarea>
-        <div id="charCount" class="char-counter">Caratteri: 0</div>
+        <label>> INSERIRE STRINGA DATI EXCEL (COLONNE):</label>
+        <textarea id="inputCodes" placeholder="ATTESA INPUT..." oninput="updateCounter()"></textarea>
+        <div id="charCount" class="char-counter">BUFF_SIZE: 0 BYTE</div>
     </div>
     
     <div class="btn-group">
-        <button class="main-btn" onclick="processCodes()">GENERA MODULI OUTPUT</button>
-        <button class="reset-btn" onclick="resetTool()">RESET</button>
+        <button class="main-btn" onclick="processCodes()">RUN COMPILE_PROCEDURE.BAT</button>
+        <button class="reset-btn" onclick="resetTool()">PURGE_MEM</button>
     </div>
 
     <div id="alertLimit" class="alert"></div>
 
     <div id="outputsContainer"></div>
+    
+    <div class="terminal-prompt" style="margin-top:20px; font-size:1rem;">SYS_PROMPT: AWAITING_COMMAND</div>
 </div>
 
 <a href="mailto:antonio.mignano@idntt.ch?subject=Feedback Tool Slider" class="feedback-btn">
-    ✉️ Invia Feedback
+    SEND_FEEDBACK.MAIL
 </a>
 
 <script>
+    // Manteniamo la logica originale
     function updateCounter() {
         const input = document.getElementById('inputCodes').value;
-        document.getElementById('charCount').innerText = "Caratteri: " + input.length.toLocaleString();
+        document.getElementById('charCount').innerText = "BUFF_SIZE: " + input.length.toLocaleString() + " BYTE";
     }
 
     function resetTool() {
-        if(confirm("Vuoi davvero svuotare tutto?")) {
+        if(confirm("ESEGUIRE CANCELLAZIONE TOTALE MEMORIA?")) {
             document.getElementById('inputCodes').value = '';
             document.getElementById('outputsContainer').innerHTML = '';
             document.getElementById('alertLimit').style.display = 'none';
@@ -86,7 +202,7 @@
         let codesArray = input.match(/\d{6,}/g);
 
         if (!codesArray) {
-            alert("Nessun codice valido trovato.");
+            alert("ERRORE: NESSUN CODICE RILEVATO NEL BUFFER.");
             return;
         }
 
@@ -105,7 +221,7 @@
 
         if (parts.length > 1) {
             alertBox.style.display = 'block';
-            alertBox.innerHTML = `<strong>Attenzione:</strong> I codici superano il limite. Sono stati generati <strong>${parts.length} moduli</strong> diversi.`;
+            alertBox.innerHTML = `<strong>WARNING:</strong> OVERFLOW RILEVATO. GENERATI <strong>${parts.length} SEGMENTI</strong> DI MEMORIA.`;
         }
 
         parts.forEach((content, index) => {
@@ -113,8 +229,8 @@
             div.className = 'output-box';
             const id = `out-${index}`;
             div.innerHTML = `
-                <label>Modulo Slider ${index + 1} (${content.length.toLocaleString()} caratteri)</label>
-                <button class="copy-btn" onclick="copyToClipboard('${id}')">Copia Modulo ${index + 1}</button>
+                <label>> SEGMENTO_OUTPUT_${index + 1} [SIZE: ${content.length.toLocaleString()} CHARS]</label>
+                <button class="copy-btn" onclick="copyToClipboard('${id}')">COPY_SEGMENT_${index + 1}</button>
                 <textarea id="${id}" class="output-textarea" readonly>${content}</textarea>
             `;
             container.appendChild(div);
@@ -127,7 +243,7 @@
         document.execCommand("copy");
         const btn = text.previousElementSibling;
         const originalText = btn.innerText;
-        btn.innerText = "COPIATO! ✅";
+        btn.innerText = "SUCCESS_COPY! 💾";
         setTimeout(() => { btn.innerText = originalText; }, 2000);
     }
 </script>
