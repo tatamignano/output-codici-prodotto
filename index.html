@@ -38,6 +38,7 @@
         .back-btn:hover {
             background: var(--dos-green);
             color: var(--dos-bg);
+            z-index: 10000;
         }
         
         body { 
@@ -152,14 +153,21 @@
             font-size: 1rem;
         }
 
-        /* Link Feedback */
+        /* Link Feedback (match back-btn size + hover) */
         .feedback-btn { 
-            border: 1px solid var(--dos-green);
+            background: var(--dos-bg);
             color: var(--dos-green);
-            padding: 10px 15px; 
+            border: 2px solid var(--dos-green);
+            padding: 6px 10px;
+            font-family: 'VT323', monospace;
             text-decoration: none;
+            transition: background .12s, color .12s;
         }
-        .feedback-btn:hover { background: var(--dos-green); color: var(--dos-bg); }
+        .feedback-btn:hover {
+            background: var(--dos-green);
+            color: var(--dos-bg);
+            z-index: 10000;
+        }
 
         /* Simula cursore lampeggiante in fondo */
         .terminal-prompt::after {
