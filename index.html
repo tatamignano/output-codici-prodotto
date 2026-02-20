@@ -176,6 +176,22 @@
         }
 
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+        /* Mobile optimizations */
+        @media (max-width: 600px) {
+            body { padding: 12px; font-size: 1rem; }
+            .container { max-width: 100%; padding: 16px; border-width: 1px; }
+            h2 { position: static; margin-bottom: 8px; font-size: 1.4rem; }
+            .btn-group { flex-direction: column; gap: 10px; }
+            button { width: 100%; padding: 8px 12px; font-size: 1.1rem; }
+            .copy-btn { width: auto; }
+            .output-textarea { height: 140px !important; }
+            .terminal-prompt { font-size: 0.95rem; }
+            /* center the util buttons at bottom for small screens */
+            .util-fixed { left: 50%; right: auto; transform: translateX(-50%); bottom: 14px; }
+            .util-fixed a { display: inline-block; }
+            .feedback-btn, .back-btn { padding: 6px 12px; font-size: 1.05rem; }
+            body::before { background-size: 100% 4px; }
+        }
     </style>
 </head>
 <body>
